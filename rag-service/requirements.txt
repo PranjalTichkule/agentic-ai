@@ -1,2 +1,7 @@
-pymupdf==1.28.2
+fastapi
+uvicorn[standard]
+chromadb
+google-genai
+python-dotenv
+pymupdf
 python-multipart
