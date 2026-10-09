@@ -1,0 +1,33 @@
+# Dependencies and generated output
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+.angular/
+**/.angular/
+
+# Python environments and caches
+venv/
+**/venv/
+.venv/
+**/.venv/
+__pycache__/
+**/__pycache__/
+*.py[cod]
+
+# Local credentials
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+
+# Local vector databases and uploaded documents
+chroma_db/
+**/chroma_db/
+rag-service/documents/
+rag-service/data/documents.json
+
+# Logs
+*.log

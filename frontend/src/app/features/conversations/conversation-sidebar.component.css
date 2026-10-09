@@ -1,0 +1,262 @@
+:host {
+  display: block;
+  flex: 0 0 264px;
+  width: 264px;
+  min-height: 100dvh;
+  background: var(--surface-sidebar);
+  border-right: 1px solid var(--border-subtle);
+}
+
+.sidebar {
+  display: flex;
+  height: 100%;
+  min-height: 100dvh;
+  flex-direction: column;
+  gap: 32px;
+  padding: 24px 16px;
+}
+
+.sidebar-header {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.brand {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-primary);
+  font-size: 16px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.brand-mark {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border-radius: 8px;
+  color: #ffffff;
+  background: var(--accent);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.new-chat-button {
+  display: flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  border: 1px solid #cddbd2;
+  border-radius: 8px;
+  color: var(--accent);
+  background: #ffffff;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.new-chat-button:hover {
+  border-color: var(--accent);
+  background: #f5faf7;
+}
+
+.new-chat-button span:first-child {
+  font-size: 19px;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.primary-navigation {
+  display: grid;
+  gap: 4px;
+}
+
+.primary-navigation a {
+  padding: 9px 11px;
+  border-radius: 6px;
+  color: #46524b;
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.primary-navigation a:hover {
+  background: #eaf0eb;
+}
+
+.primary-navigation a.is-current {
+  color: var(--accent);
+  background: #e4eee7;
+  font-weight: 600;
+}
+
+.primary-navigation a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.conversation-section h2 {
+  margin: 0 0 12px;
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.conversation-list {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.conversation-item {
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  padding: 10px 11px;
+  border: 0;
+  border-radius: 6px;
+  color: #46524b;
+  background: transparent;
+  cursor: pointer;
+  font-size: 14px;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.conversation-item:hover {
+  background: #eaf0eb;
+}
+
+.conversation-item.is-active {
+  color: var(--accent);
+  background: #e4eee7;
+  font-weight: 600;
+}
+
+.conversation-item:focus-visible,
+.new-chat-button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.new-chat-button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.sidebar-state,
+.sidebar-error {
+  margin: 0;
+  padding: 9px 10px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.sidebar-state {
+  color: var(--text-secondary);
+}
+
+.sidebar-error {
+  color: #9b3b32;
+}
+
+@media (max-width: 640px) {
+  :host {
+    width: 100%;
+    min-height: 0;
+    flex: 0 0 auto;
+    border-right: 0;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .sidebar {
+    min-height: 0;
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 16px;
+  }
+
+  .sidebar-header {
+    flex: 0 0 auto;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .primary-navigation {
+    display: flex;
+    gap: 2px;
+  }
+
+  .primary-navigation a {
+    padding: 8px;
+    font-size: 12px;
+  }
+
+  .new-chat-button {
+    width: 42px;
+    min-width: 42px;
+    font-size: 0;
+  }
+
+  .new-chat-button span:first-child {
+    font-size: 21px;
+  }
+
+  .conversation-section {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .conversation-section h2 {
+    display: none;
+  }
+
+  .conversation-list {
+    display: flex;
+    overflow-x: auto;
+    gap: 2px;
+  }
+
+  .conversation-item {
+    padding: 8px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 420px) {
+  .sidebar {
+    gap: 8px;
+    padding-inline: 10px;
+  }
+
+  .sidebar-header {
+    gap: 8px;
+  }
+
+  .primary-navigation a {
+    padding: 7px 5px;
+    font-size: 11px;
+  }
+
+  .brand {
+    gap: 6px;
+    font-size: 14px;
+  }
+
+  .brand-mark {
+    width: 26px;
+    height: 26px;
+  }
+}

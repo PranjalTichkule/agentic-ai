@@ -1,0 +1,66 @@
+:host {
+  display: block;
+  width: min(100%, 780px);
+  margin-inline: auto;
+}
+
+.composer {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  padding: 9px 10px 9px 16px;
+  border: 1px solid #d8dfda;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 3px 12px rgb(32 42 37 / 5%);
+}
+
+.composer:focus-within {
+  border-color: #98b9a8;
+  box-shadow: 0 0 0 3px rgb(23 107 86 / 9%);
+}
+
+textarea {
+  width: 100%;
+  min-height: 25px;
+  max-height: 160px;
+  flex: 1;
+  resize: none;
+  border: 0;
+  outline: 0;
+  color: var(--text-primary);
+  background: transparent;
+  font: inherit;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+textarea::placeholder {
+  color: #8a948e;
+}
+
+textarea:disabled {
+  cursor: not-allowed;
+}
+
+.composer button {
+  min-width: 62px;
+  min-height: 36px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 8px;
+  color: #ffffff;
+  background: var(--accent);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.composer button:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.composer button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}

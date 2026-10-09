@@ -1,0 +1,12 @@
+<div class="composer">
+  <textarea
+    aria-label="Your message"
+    placeholder="Message Agentic AI"
+    rows="1"
+    [value]="draft()"
+    [disabled]="disabled()"
+    (input)="onInput($event)"
+    (keydown)="onKeydown($event)"
+  ></textarea>
+  <button type="button" [disabled]="!canSubmit()" (click)="submit()">Send</button>
+</div>

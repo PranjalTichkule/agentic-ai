@@ -1,0 +1,35 @@
+:root {
+	color-scheme: light;
+	--surface-main: #ffffff;
+	--surface-sidebar: #f5f7f5;
+	--surface-muted: #edf1ee;
+	--text-primary: #202a25;
+	--text-secondary: #66716b;
+	--border-subtle: #e1e7e2;
+	--accent: #176b56;
+	--accent-hover: #105541;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+html,
+body {
+	width: 100%;
+	min-width: 320px;
+	min-height: 100%;
+	margin: 0;
+}
+
+body {
+	color: var(--text-primary);
+	background: var(--surface-main);
+	font-family: "Avenir Next", Avenir, "Segoe UI", sans-serif;
+	-webkit-font-smoothing: antialiased;
+	text-rendering: optimizeLegibility;
+}
+
+button {
+	font: inherit;
+}

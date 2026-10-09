@@ -1,0 +1,87 @@
+<section class="memory-screen" aria-labelledby="memory-title">
+  <header class="memory-header">
+    <div>
+      <p class="memory-eyebrow">Personal context</p>
+      <h1 id="memory-title">Memories</h1>
+    </div>
+  </header>
+
+  <div class="memory-content">
+    <section class="memory-form-section" aria-labelledby="memory-form-title">
+      <div class="section-heading">
+        <div>
+          <h2 id="memory-form-title">Add or update a memory</h2>
+          <p>Save a detail the agent can remember for future conversations.</p>
+        </div>
+      </div>
+
+      <form class="memory-form" (submit)="saveMemory($event)">
+        <label>
+          <span>Key</span>
+          <input
+            type="text"
+            autocomplete="off"
+            placeholder="preferred_currency"
+            [value]="key()"
+            [disabled]="isSaving()"
+            (input)="updateKey($event)"
+          />
+        </label>
+        <label>
+          <span>Value</span>
+          <textarea
+            rows="2"
+            placeholder="INR"
+            [value]="value()"
+            [disabled]="isSaving()"
+            (input)="updateValue($event)"
+          ></textarea>
+        </label>
+        <button class="save-button" type="submit" [disabled]="isSaving()">
+          {{ isSaving() ? 'Saving...' : 'Save Memory' }}
+        </button>
+      </form>
+    </section>
+
+    @if (errorMessage()) {
+      <p class="memory-feedback error-feedback" role="alert">{{ errorMessage() }}</p>
+    }
+    @if (successMessage()) {
+      <p class="memory-feedback success-feedback" role="status">{{ successMessage() }}</p>
+    }
+
+    <section class="saved-memories" aria-labelledby="saved-memories-title">
+      <div class="section-heading saved-heading">
+        <h2 id="saved-memories-title">Saved memories</h2>
+        @if (!isLoading()) {
+          <span class="memory-count">{{ memories().length }}</span>
+        }
+      </div>
+
+      @if (isLoading()) {
+        <p class="memory-state" role="status">Loading memories...</p>
+      } @else if (memories().length === 0) {
+        <p class="memory-state">No memories saved yet.</p>
+      } @else {
+        <ul class="memory-list">
+          @for (memory of memories(); track memory.key) {
+            <li class="memory-item">
+              <div class="memory-detail">
+                <span class="memory-key">{{ memory.key }}</span>
+                <p>{{ memory.value }}</p>
+              </div>
+              <button
+                class="delete-button"
+                type="button"
+                [disabled]="deletingKeys().has(memory.key)"
+                (click)="deleteMemory(memory)"
+              >
+                {{ deletingKeys().has(memory.key) ? 'Deleting...' : 'Delete' }}
+              </button>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+  </div>
+</section>

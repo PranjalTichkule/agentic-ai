@@ -1,0 +1,47 @@
+<section class="chat-screen" aria-labelledby="chat-title">
+  <header class="chat-header">
+    <h1 id="chat-title">{{ selectedConversationId() ? 'Conversation' : 'New conversation' }}</h1>
+  </header>
+
+  @if (!selectedConversationId()) {
+    <div class="chat-empty-state">
+      <div class="empty-mark" aria-hidden="true"><span></span></div>
+      <h2>Start a new conversation</h2>
+      <p>Choose a conversation or create one to get started.</p>
+    </div>
+  } @else {
+    <div class="message-list" #messagesContainer aria-live="polite" [attr.aria-busy]="isLoadingMessages() || isSending()">
+      @if (isLoadingMessages()) {
+        <p class="thread-status" role="status">Loading messages...</p>
+      } @else if (messages().length === 0) {
+        <div class="chat-empty-state compact-empty-state">
+          <div class="empty-mark" aria-hidden="true"><span></span></div>
+          <h2>Start a new conversation</h2>
+          <p>Ask me about weather, calculations, currency conversion, or anything your agent can help with.</p>
+        </div>
+      } @else {
+        @for (message of messages(); track message._id ?? $index) {
+          <article class="message-row" [class.from-user]="message.role === 'user'">
+            <span class="message-author">{{ message.role === 'user' ? 'You' : 'Assistant' }}</span>
+            <p class="message-bubble">{{ message.content }}</p>
+          </article>
+        }
+      }
+
+      @if (isSending()) {
+        <p class="thread-status" role="status">Assistant is thinking...</p>
+      }
+    </div>
+
+    @if (errorMessage()) {
+      <p class="chat-error" role="alert">{{ errorMessage() }}</p>
+    }
+  }
+
+  <footer class="message-footer">
+    <app-message-input
+      [disabled]="!selectedConversationId() || isLoadingMessages() || isSending()"
+      (submitMessage)="sendMessage($event)"
+    />
+  </footer>
+</section>

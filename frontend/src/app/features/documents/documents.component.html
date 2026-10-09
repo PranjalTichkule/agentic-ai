@@ -1,0 +1,133 @@
+<section class="documents-page container-fluid">
+  <header class="documents-header d-flex flex-wrap align-items-center justify-content-between gap-3">
+    <div>
+      <h1 class="h3 mb-1">Documents</h1>
+      <p class="text-body-secondary mb-0">PDFs available to your RAG assistant</p>
+    </div>
+    <input
+      #pdfInput
+      class="visually-hidden"
+      type="file"
+      accept=".pdf,application/pdf"
+      aria-label="Choose a PDF to upload"
+      [disabled]="isUploading()"
+      (change)="onFileSelected($event)"
+    />
+    <div class="library-count" aria-live="polite">
+      <span class="library-count-label">DOCUMENTS</span>
+      <strong>{{ documents().length }}</strong>
+      <span>{{ documents().length === 1 ? 'file' : 'files' }}</span>
+    </div>
+  </header>
+
+  <div class="upload-toolbar d-flex flex-wrap align-items-center gap-2">
+    <button
+      class="btn btn-outline-secondary choose-file-button"
+      type="button"
+      [disabled]="isUploading()"
+      (click)="pdfInput.click()"
+    >
+      Choose File
+    </button>
+    <span class="selected-file-name text-body-secondary" [class.has-file]="selectedFile()">
+      {{ selectedFile()?.name ?? 'No file chosen' }}
+    </span>
+    <button
+      class="btn btn-outline-secondary upload-button ms-sm-3"
+      type="button"
+      [disabled]="isUploading() || !selectedFile()"
+      (click)="uploadSelectedFile()"
+    >
+      @if (isUploading()) {
+        <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
+        Uploading...
+      } @else {
+        <span class="upload-symbol" aria-hidden="true">↑</span>
+        Upload PDF
+      }
+    </button>
+  </div>
+
+  @if (errorMessage()) {
+    <div class="alert alert-danger" role="alert">{{ errorMessage() }}</div>
+  }
+  @if (successMessage()) {
+    <div class="alert alert-success" role="status">{{ successMessage() }}</div>
+  }
+
+  @if (isUploading()) {
+    <section class="upload-progress-card" role="status" aria-live="polite">
+      <div class="pdf-mark" aria-hidden="true">PDF</div>
+      <div class="upload-progress-content">
+        <div class="upload-progress-heading">
+          <strong>{{ activeUploadFilename() }}</strong>
+          <span class="badge text-bg-primary">PROCESSING</span>
+        </div>
+        <div class="indeterminate-track" aria-hidden="true">
+          <span></span>
+        </div>
+        <span class="upload-progress-label">Uploading and processing document...</span>
+      </div>
+    </section>
+  }
+
+  @if (isLoading()) {
+    <div class="d-flex align-items-center gap-2 py-5 text-body-secondary" role="status">
+      <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+      <span>Loading documents...</span>
+    </div>
+  } @else if (documents().length === 0) {
+    <div class="documents-empty border rounded-3 text-center py-5 px-3">
+      <h2 class="h5 mb-2">No documents yet</h2>
+      <p class="text-body-secondary mb-0">Uploaded PDFs will appear here.</p>
+    </div>
+  } @else {
+    <div class="table-responsive documents-table-wrap">
+      <table class="table align-middle mb-0">
+        <thead>
+          <tr>
+            <th scope="col">Document</th>
+            <th scope="col" class="text-end">Pages</th>
+            <th scope="col" class="text-end">Chunks</th>
+            <th scope="col">Status</th>
+            <th scope="col">Created</th>
+            <th scope="col"><span class="visually-hidden">Actions</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (document of documents(); track document.document_id) {
+            <tr>
+              <td class="document-name fw-medium text-break">
+                <span class="document-mark" aria-hidden="true">PDF</span>
+                {{ document.filename }}
+              </td>
+              <td class="text-end">{{ document.page_count }}</td>
+              <td class="text-end">{{ document.chunk_count }}</td>
+              <td>
+                <span class="badge" [class]="statusClass(document.status)">
+                  {{ document.status }}
+                </span>
+              </td>
+              <td class="text-nowrap">{{ formatDate(document.created_at) }}</td>
+              <td class="text-end">
+                <button
+                  class="btn btn-outline-danger btn-sm delete-button"
+                  type="button"
+                  [disabled]="isDeleting(document.document_id)"
+                  (click)="deleteDocument(document)"
+                >
+                  @if (isDeleting(document.document_id)) {
+                    <span class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>
+                    Deleting...
+                  } @else {
+                    Delete
+                  }
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

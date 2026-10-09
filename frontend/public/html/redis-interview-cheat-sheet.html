@@ -1,0 +1,2125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Redis Interview Cheat Sheet</title>
+<style>
+  :root {
+    --bg: #f3f5f8;
+    --card: #ffffff;
+    --primary: #d82c20;
+    --primary-dark: #a91f17;
+    --navy: #172033;
+    --text: #273244;
+    --muted: #667085;
+    --border: #e2e6ec;
+    --green: #16794c;
+    --green-bg: #ecfdf3;
+    --yellow: #946200;
+    --yellow-bg: #fff8e6;
+    --blue: #2457a6;
+    --blue-bg: #eef5ff;
+    --red-bg: #fff0ee;
+    --shadow: 0 5px 18px rgba(20, 30, 50, 0.07);
+    --radius: 12px;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: Arial, Helvetica, sans-serif;
+    line-height: 1.55;
+  }
+
+  .container {
+    width: min(1180px, calc(100% - 32px));
+    margin: auto;
+  }
+
+  header {
+    background: linear-gradient(135deg, #a91f17, #d82c20);
+    color: white;
+    padding: 42px 0 36px;
+    border-bottom: 5px solid #8e1913;
+  }
+
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    gap: 30px;
+    align-items: center;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+
+  .redis-logo {
+    width: 70px;
+    height: 70px;
+    border-radius: 16px;
+    background: white;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 27px;
+    letter-spacing: -2px;
+    box-shadow: 0 8px 25px rgba(0,0,0,.15);
+  }
+
+  h1 {
+    margin: 0;
+    font-size: clamp(30px, 5vw, 48px);
+    line-height: 1.05;
+  }
+
+  .subtitle {
+    margin: 10px 0 0;
+    opacity: .9;
+    font-size: 17px;
+  }
+
+  .badge {
+    background: rgba(255,255,255,.14);
+    border: 1px solid rgba(255,255,255,.3);
+    border-radius: 999px;
+    padding: 10px 16px;
+    white-space: nowrap;
+    font-weight: 700;
+  }
+
+  .toc {
+    background: white;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    box-shadow: 0 2px 10px rgba(0,0,0,.05);
+  }
+
+  .toc-inner {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 10px 0;
+  }
+
+  .toc a {
+    text-decoration: none;
+    color: var(--text);
+    background: #f7f8fa;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 7px 11px;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .toc a:hover {
+    color: var(--primary);
+    border-color: var(--primary);
+  }
+
+  main {
+    padding: 28px 0 60px;
+  }
+
+  section {
+    margin: 34px 0;
+    scroll-margin-top: 65px;
+  }
+
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 17px;
+  }
+
+  .section-number {
+    background: var(--primary);
+    color: white;
+    min-width: 34px;
+    height: 34px;
+    border-radius: 9px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+    font-weight: 900;
+  }
+
+  h2 {
+    margin: 0;
+    color: var(--navy);
+    font-size: 25px;
+  }
+
+  h3 {
+    color: var(--navy);
+    margin: 0 0 9px;
+    font-size: 18px;
+  }
+
+  p {
+    margin: 7px 0 12px;
+  }
+
+  ul {
+    margin: 8px 0 12px;
+    padding-left: 22px;
+  }
+
+  li {
+    margin: 5px 0;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 15px;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow);
+  }
+
+  .card.compact {
+    padding: 16px;
+  }
+
+  .card-accent {
+    border-left: 5px solid var(--primary);
+  }
+
+  .card-green {
+    border-left: 5px solid var(--green);
+  }
+
+  .card-blue {
+    border-left: 5px solid var(--blue);
+  }
+
+  .tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 4px 8px;
+    border-radius: 999px;
+    background: var(--red-bg);
+    color: var(--primary-dark);
+    margin-bottom: 8px;
+  }
+
+  .definition {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--navy);
+  }
+
+  .highlight {
+    color: var(--primary);
+    font-weight: 800;
+  }
+
+  .muted {
+    color: var(--muted);
+  }
+
+  .callout {
+    padding: 16px 18px;
+    border-radius: 10px;
+    margin: 15px 0;
+    border: 1px solid;
+  }
+
+  .callout strong {
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .important {
+    background: var(--red-bg);
+    border-color: #f4b7b0;
+  }
+
+  .warning {
+    background: var(--yellow-bg);
+    border-color: #eed38d;
+  }
+
+  .success {
+    background: var(--green-bg);
+    border-color: #b7e5cb;
+  }
+
+  .info {
+    background: var(--blue-bg);
+    border-color: #bdd1f1;
+  }
+
+  .flow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 20px 0;
+  }
+
+  .flow-box {
+    background: white;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 13px 15px;
+    min-width: 130px;
+    text-align: center;
+    font-weight: 800;
+    box-shadow: var(--shadow);
+  }
+
+  .flow-box.redis {
+    border-color: var(--primary);
+    color: var(--primary-dark);
+    background: var(--red-bg);
+  }
+
+  .flow-box.mongo {
+    border-color: #8c9aaa;
+    background: #f7f9fb;
+  }
+
+  .arrow {
+    color: var(--primary);
+    font-size: 23px;
+    font-weight: 900;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+  }
+
+  th {
+    background: #202b3f;
+    color: white;
+    text-align: left;
+    padding: 12px 14px;
+    font-size: 13px;
+  }
+
+  td {
+    padding: 11px 14px;
+    border-top: 1px solid var(--border);
+    vertical-align: top;
+    font-size: 13px;
+  }
+
+  tr:nth-child(even) td {
+    background: #fafbfc;
+  }
+
+  .pill-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-top: 10px;
+  }
+
+  .pill {
+    padding: 6px 9px;
+    background: #f1f3f6;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .interview-answer {
+    background: linear-gradient(135deg, #202b3f, #172033);
+    color: white;
+    border-radius: 12px;
+    padding: 22px;
+    box-shadow: var(--shadow);
+  }
+
+  .interview-answer h3 {
+    color: white;
+  }
+
+  .interview-answer p {
+    color: #eef1f6;
+    font-size: 15px;
+  }
+
+  .memory {
+    background: #fffdf5;
+    border: 2px dashed #d9bb65;
+    border-radius: 12px;
+    padding: 18px;
+  }
+
+  .memory-title {
+    color: #795900;
+    font-weight: 900;
+    margin-bottom: 8px;
+  }
+
+  .memory-map {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 15px;
+  }
+
+  .memory-node {
+    background: white;
+    border: 1px solid #ddd5b9;
+    border-radius: 9px;
+    padding: 14px;
+    text-align: center;
+    font-weight: 800;
+  }
+
+  .memory-node span {
+    display: block;
+    color: var(--muted);
+    font-size: 11px;
+    margin-top: 4px;
+    font-weight: 600;
+  }
+
+  .question-list {
+    counter-reset: q;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .question {
+    counter-increment: q;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    padding: 13px 15px 13px 46px;
+    position: relative;
+    font-weight: 700;
+    box-shadow: 0 2px 8px rgba(20,30,50,.04);
+  }
+
+  .question::before {
+    content: counter(q);
+    position: absolute;
+    left: 13px;
+    top: 11px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 11px;
+  }
+
+  .architecture {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px;
+    box-shadow: var(--shadow);
+  }
+
+  .arch-row {
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .arch-node {
+    flex: 1;
+    min-width: 145px;
+    max-width: 230px;
+    padding: 17px 13px;
+    text-align: center;
+    border-radius: 10px;
+    border: 2px solid var(--border);
+    background: #fafbfc;
+  }
+
+  .arch-node strong {
+    display: block;
+    color: var(--navy);
+    margin-bottom: 5px;
+  }
+
+  .arch-node small {
+    color: var(--muted);
+  }
+
+  .arch-node.redis {
+    border-color: var(--primary);
+    background: var(--red-bg);
+  }
+
+  .arch-node.mongo {
+    border-color: #7e8997;
+  }
+
+  .arch-node.lb {
+    border-color: #5b75a6;
+    background: var(--blue-bg);
+  }
+
+  .arrow-down {
+    text-align: center;
+    color: var(--primary);
+    font-size: 26px;
+    margin: 6px 0;
+  }
+
+  .two-col-flow {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-top: 18px;
+  }
+
+  .mini-flow {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    background: #fafbfc;
+  }
+
+  .mini-flow h3 {
+    font-size: 15px;
+  }
+
+  .step {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    margin: 9px 0;
+  }
+
+  .step-num {
+    flex: 0 0 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: white;
+    font-size: 11px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 900;
+  }
+
+  .checklist {
+    list-style: none;
+    padding: 0;
+  }
+
+  .checklist li {
+    position: relative;
+    padding-left: 28px;
+    margin: 10px 0;
+  }
+
+  .checklist li::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 21px;
+    height: 21px;
+    border-radius: 5px;
+    background: var(--green-bg);
+    color: var(--green);
+    text-align: center;
+    font-weight: 900;
+  }
+
+  .big-number {
+    font-size: 32px;
+    font-weight: 900;
+    color: var(--primary);
+    line-height: 1;
+  }
+
+  .scenario {
+    margin-top: 15px;
+    border-top: 1px solid var(--border);
+    padding-top: 15px;
+  }
+
+  footer {
+    background: #172033;
+    color: #d8dee9;
+    text-align: center;
+    padding: 25px 15px;
+    font-size: 13px;
+  }
+
+  footer strong {
+    color: white;
+  }
+
+  @media (max-width: 850px) {
+    .grid,
+    .grid-3,
+    .memory-map,
+    .two-col-flow,
+    .question-list {
+      grid-template-columns: 1fr;
+    }
+
+    .header-content {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .badge {
+      white-space: normal;
+    }
+
+    table {
+      display: block;
+      overflow-x: auto;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .container {
+      width: min(100% - 20px, 1180px);
+    }
+
+    header {
+      padding: 30px 0;
+    }
+
+    .redis-logo {
+      width: 58px;
+      height: 58px;
+      font-size: 22px;
+    }
+
+    .card,
+    .architecture {
+      padding: 15px;
+    }
+
+    .flow {
+      flex-direction: column;
+    }
+
+    .arrow {
+      transform: rotate(90deg);
+    }
+  }
+
+  @media print {
+    @page {
+      margin: 12mm;
+      size: A4;
+    }
+
+    body {
+      background: white;
+      font-size: 10.5pt;
+    }
+
+    header {
+      background: white;
+      color: black;
+      border: 2px solid #222;
+      padding: 20px;
+    }
+
+    .redis-logo {
+      border: 2px solid #222;
+      color: #222;
+      box-shadow: none;
+    }
+
+    .subtitle {
+      color: #444;
+    }
+
+    .toc {
+      display: none;
+    }
+
+    main {
+      padding: 0;
+    }
+
+    section {
+      margin: 20px 0;
+      page-break-inside: avoid;
+    }
+
+    .card,
+    .architecture,
+    table,
+    .question {
+      box-shadow: none;
+    }
+
+    .card {
+      break-inside: avoid;
+    }
+
+    table {
+      page-break-inside: avoid;
+    }
+
+    .interview-answer {
+      background: white;
+      color: black;
+      border: 2px solid #222;
+    }
+
+    .interview-answer h3,
+    .interview-answer p {
+      color: black;
+    }
+
+    .flow-box,
+    .arch-node {
+      box-shadow: none;
+    }
+
+    footer {
+      background: white;
+      color: #333;
+      border-top: 1px solid #aaa;
+    }
+  }
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="container header-content">
+    <div class="brand">
+      <div class="redis-logo">R</div>
+      <div>
+        <h1>Redis Interview Cheat Sheet</h1>
+        <p class="subtitle">Practical architecture &amp; interview revision for a 3+ years Software Engineer</p>
+      </div>
+    </div>
+    <div class="badge">Node.js • MongoDB • REST APIs</div>
+  </div>
+</header>
+
+<nav class="toc">
+  <div class="container toc-inner">
+    <a href="#basics">Basics</a>
+    <a href="#types">Data Types</a>
+    <a href="#ttl">TTL</a>
+    <a href="#cache">Caching</a>
+    <a href="#session">Sessions</a>
+    <a href="#rate">Rate Limiting</a>
+    <a href="#pubsub">Pub/Sub</a>
+    <a href="#persistence">Persistence</a>
+    <a href="#replication">Replication</a>
+    <a href="#cluster">Cluster</a>
+    <a href="#comparison">Comparisons</a>
+    <a href="#failure">Failure</a>
+    <a href="#10k">10K RPS</a>
+    <a href="#los">LOS</a>
+    <a href="#questions">Questions</a>
+  </div>
+</nav>
+
+<main class="container">
+
+  <section id="basics">
+    <div class="section-title">
+      <div class="section-number">01</div>
+      <h2>What is Redis?</h2>
+    </div>
+
+    <div class="grid">
+      <div class="card card-accent">
+        <span class="tag">INTERVIEW DEFINITION</span>
+        <div class="definition">Redis = Remote Dictionary Server</div>
+        <p>
+          Redis is a <span class="highlight">fast, in-memory data store</span> commonly used
+          for caching, sessions, rate limiting, Pub/Sub and temporary application state.
+        </p>
+        <p>
+          It can also provide persistence, replication, clustering and other capabilities,
+          but in a typical backend architecture Redis is often introduced to provide
+          <strong>very low-latency shared access to frequently used data.</strong>
+        </p>
+      </div>
+
+      <div class="card">
+        <h3>Why is Redis fast?</h3>
+        <ul>
+          <li>Primary data access happens in memory.</li>
+          <li>Simple data structures reduce processing overhead.</li>
+          <li>Efficient network protocol and optimized implementation.</li>
+          <li>Operations are generally very low latency.</li>
+          <li>Useful when an application needs extremely frequent reads/writes.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout important">
+      <strong>⭐ Key interview point</strong>
+      Redis is usually not the replacement for your primary database. In a cache-aside architecture,
+      <strong>MongoDB remains the source of truth</strong> while Redis provides faster access to frequently needed data.
+    </div>
+
+    <div class="grid-3">
+      <div class="card compact"><h3>Cache</h3><p>Store frequently accessed data temporarily to reduce database latency and load.</p></div>
+      <div class="card compact"><h3>Sessions</h3><p>Store shared session state so multiple Node.js instances can access it.</p></div>
+      <div class="card compact"><h3>Rate Limiting</h3><p>Maintain distributed counters for API request limits.</p></div>
+      <div class="card compact"><h3>Pub/Sub</h3><p>Send real-time, non-durable messages through channels.</p></div>
+      <div class="card compact"><h3>Temporary State</h3><p>OTP, temporary tokens, verification state and short-lived workflows.</p></div>
+      <div class="card compact"><h3>Distributed Coordination</h3><p>Redis can support selected distributed coordination patterns when designed carefully.</p></div>
+    </div>
+  </section>
+
+  <section id="types">
+    <div class="section-title">
+      <div class="section-number">02</div>
+      <h2>Redis Data Types</h2>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>What it represents</th>
+          <th>Typical use case</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>String</strong></td>
+          <td>Simple value such as text, number or serialized JSON.</td>
+          <td>Cache values, counters, tokens, flags.</td>
+        </tr>
+        <tr>
+          <td><strong>Hash</strong></td>
+          <td>Field-value collection inside one Redis key.</td>
+          <td>User/session/profile-like objects.</td>
+        </tr>
+        <tr>
+          <td><strong>List</strong></td>
+          <td>Ordered collection of values.</td>
+          <td>Queues, recent items, activity lists.</td>
+        </tr>
+        <tr>
+          <td><strong>Set</strong></td>
+          <td>Unique unordered values.</td>
+          <td>Unique users, tags, membership tracking.</td>
+        </tr>
+        <tr>
+          <td><strong>Sorted Set</strong></td>
+          <td>Unique values associated with scores.</td>
+          <td>Leaderboards, rankings, priority-like ordering.</td>
+        </tr>
+        <tr>
+          <td><strong>Stream</strong></td>
+          <td>Append-oriented sequence of records with IDs.</td>
+          <td>Event streams and consumer-based processing.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="memory" style="margin-top:15px;">
+      <div class="memory-title">🧠 Memory Tip</div>
+      <div class="pill-row">
+        <span class="pill">String → Value</span>
+        <span class="pill">Hash → Object fields</span>
+        <span class="pill">List → Ordered items</span>
+        <span class="pill">Set → Unique items</span>
+        <span class="pill">Sorted Set → Score + ranking</span>
+        <span class="pill">Stream → Events</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="ttl">
+    <div class="section-title">
+      <div class="section-number">03</div>
+      <h2>TTL — Time To Live</h2>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="definition">TTL defines how long a Redis key should remain available.</div>
+        <p>
+          After the configured lifetime expires, Redis can automatically remove the key.
+          TTL is especially useful for data that should naturally disappear.
+        </p>
+      </div>
+
+      <div class="card card-green">
+        <h3>Why use TTL?</h3>
+        <ul>
+          <li>Prevents temporary data from living forever.</li>
+          <li>Controls cache freshness.</li>
+          <li>Automatically removes expired sessions or tokens.</li>
+          <li>Helps control memory usage.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="grid-3">
+      <div class="card compact">
+        <h3>OTP</h3>
+        <p>Store OTP for a short period such as a few minutes, then automatically expire it.</p>
+      </div>
+      <div class="card compact">
+        <h3>Session</h3>
+        <p>Expire inactive sessions after a configured period.</p>
+      </div>
+      <div class="card compact">
+        <h3>Cache</h3>
+        <p>Keep product or loan configuration cached for a suitable freshness window.</p>
+      </div>
+      <div class="card compact">
+        <h3>Temporary Token</h3>
+        <p>Short-lived verification or reset token can automatically expire.</p>
+      </div>
+    </div>
+
+    <div class="callout success">
+      <strong>Interview answer:</strong>
+      TTL is a time limit attached to a Redis key. It is useful for temporary data such as OTPs,
+      sessions, tokens and cache entries because Redis can automatically expire them.
+    </div>
+  </section>
+
+  <section id="cache">
+    <div class="section-title">
+      <div class="section-number">04</div>
+      <h2>Cache Hit vs Cache Miss</h2>
+    </div>
+
+    <div class="grid">
+      <div class="card card-green">
+        <h3>Cache Hit ✅</h3>
+        <p>
+          The requested data exists in Redis and is returned directly without querying the primary database.
+        </p>
+      </div>
+
+      <div class="card card-accent">
+        <h3>Cache Miss ❌</h3>
+        <p>
+          The requested data is not in Redis, so the application retrieves it from the primary database,
+          then may cache it for future requests.
+        </p>
+      </div>
+    </div>
+
+    <div class="flow">
+      <div class="flow-box">Client</div>
+      <div class="arrow">→</div>
+      <div class="flow-box">Node.js API</div>
+      <div class="arrow">→</div>
+      <div class="flow-box redis">Redis?</div>
+      <div class="arrow">→</div>
+      <div class="flow-box">Response</div>
+    </div>
+
+    <div class="two-col-flow">
+      <div class="mini-flow">
+        <h3>Cache Hit</h3>
+        <div class="step"><span class="step-num">1</span><span>API receives request.</span></div>
+        <div class="step"><span class="step-num">2</span><span>Redis contains the key.</span></div>
+        <div class="step"><span class="step-num">3</span><span>Return cached value.</span></div>
+        <div class="step"><span class="step-num">4</span><span>MongoDB is not queried.</span></div>
+      </div>
+
+      <div class="mini-flow">
+        <h3>Cache Miss</h3>
+        <div class="step"><span class="step-num">1</span><span>API receives request.</span></div>
+        <div class="step"><span class="step-num">2</span><span>Redis does not contain the key.</span></div>
+        <div class="step"><span class="step-num">3</span><span>Query MongoDB.</span></div>
+        <div class="step"><span class="step-num">4</span><span>Store result in Redis and return it.</span></div>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <strong>Why maximize cache hit ratio?</strong>
+      A high hit ratio means more requests are served from Redis, reducing MongoDB load and usually reducing
+      response latency. A cache is useful only when the cost of maintaining it is justified by the performance benefit.
+    </div>
+  </section>
+
+  <section id="cache-aside">
+    <div class="section-title">
+      <div class="section-number">05</div>
+      <h2>Cache-Aside Pattern</h2>
+    </div>
+
+    <div class="card">
+      <h3>Most important Redis caching pattern for interviews</h3>
+      <p>
+        In cache-aside, the <strong>application owns the cache logic</strong>. It checks Redis first,
+        falls back to MongoDB on a miss, then places the result into Redis.
+      </p>
+
+      <div class="flow">
+        <div class="flow-box">Client</div>
+        <div class="arrow">→</div>
+        <div class="flow-box">Node.js</div>
+        <div class="arrow">→</div>
+        <div class="flow-box redis">Redis</div>
+        <div class="arrow">→</div>
+        <div class="flow-box">Return</div>
+      </div>
+
+      <div class="callout warning">
+        <strong>On a cache miss:</strong>
+        Redis → miss → MongoDB → result → Redis with TTL → response.
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h3>Typical request flow</h3>
+        <ol>
+          <li>Receive REST API request.</li>
+          <li>Build a deterministic Redis cache key.</li>
+          <li>Check Redis.</li>
+          <li>If hit → return Redis value.</li>
+          <li>If miss → query MongoDB.</li>
+          <li>Store the result in Redis with TTL.</li>
+          <li>Return response to client.</li>
+        </ol>
+      </div>
+
+      <div class="card card-accent">
+        <h3>Critical architecture rule</h3>
+        <p><strong>MongoDB = source of truth</strong></p>
+        <p><strong>Redis = fast access layer</strong></p>
+        <p>
+          If Redis disappears, cacheable data should generally be recoverable from MongoDB.
+          The exact fallback strategy depends on the application's availability requirements.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section id="invalidation">
+    <div class="section-title">
+      <div class="section-number">06</div>
+      <h2>Cache Invalidation</h2>
+    </div>
+
+    <div class="card">
+      <div class="definition">Cache invalidation = making stale cached data unavailable or replacing it.</div>
+      <p>
+        The difficult part of caching is often not reading data—it is keeping cached data consistent enough
+        with the source of truth.
+      </p>
+    </div>
+
+    <table style="margin-top:16px;">
+      <thead>
+        <tr>
+          <th>Strategy</th>
+          <th>How it works</th>
+          <th>Useful when</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>TTL</strong></td>
+          <td>Allow the cached value to expire automatically.</td>
+          <td>Slightly stale data is acceptable.</td>
+        </tr>
+        <tr>
+          <td><strong>Delete after DB update</strong></td>
+          <td>Update MongoDB, then invalidate the Redis key.</td>
+          <td>You want the next read to reload fresh data.</td>
+        </tr>
+        <tr>
+          <td><strong>Update cache</strong></td>
+          <td>Update MongoDB and corresponding cached value.</td>
+          <td>You need the cache to reflect changes immediately.</td>
+        </tr>
+        <tr>
+          <td><strong>Versioned keys</strong></td>
+          <td>Use a version or generation in the key to move consumers to new data.</td>
+          <td>Large-scale or controlled cache migrations.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout warning">
+      <strong>Stale cache problem:</strong>
+      If MongoDB contains new data but Redis still contains the old value, users can receive stale responses.
+      Your invalidation strategy should match how much staleness the business can tolerate.
+    </div>
+
+    <div class="interview-answer">
+      <h3>🎤 One-sentence answer</h3>
+      <p>
+        “Cache invalidation means ensuring stale cached data is removed or refreshed; I would typically combine
+        TTL with explicit invalidation after important database updates.”
+      </p>
+    </div>
+  </section>
+
+  <section id="session">
+    <div class="section-title">
+      <div class="section-number">07</div>
+      <h2>Session Management</h2>
+    </div>
+
+    <div class="card">
+      <h3>Why local Node.js memory becomes a problem</h3>
+      <p>
+        Imagine three Node.js instances behind a load balancer. If session information is stored only
+        inside each process's local memory, a request can reach a different instance that does not know
+        the user's session.
+      </p>
+    </div>
+
+    <div class="architecture" style="margin-top:16px;">
+      <div class="arch-row">
+        <div class="arch-node">Client</div>
+        <div class="arch-node lb"><strong>Load Balancer</strong><small>Distributes requests</small></div>
+      </div>
+
+      <div class="arrow-down">↓</div>
+
+      <div class="arch-row">
+        <div class="arch-node"><strong>Node.js #1</strong><small>Stateless API</small></div>
+        <div class="arch-node"><strong>Node.js #2</strong><small>Stateless API</small></div>
+        <div class="arch-node"><strong>Node.js #3</strong><small>Stateless API</small></div>
+      </div>
+
+      <div class="arrow-down">↓</div>
+
+      <div class="arch-row">
+        <div class="arch-node redis"><strong>Redis</strong><small>Shared session store</small></div>
+      </div>
+    </div>
+
+    <div class="callout success">
+      <strong>Why this scales:</strong>
+      Redis is a separate shared service. Every Node.js instance can access the same session state,
+      allowing horizontal scaling without depending on which server receives the request.
+    </div>
+
+    <div class="callout important">
+      <strong>Interview distinction:</strong>
+      Redis is not “inside” every Node.js server. The Node.js processes connect to a separate Redis service.
+    </div>
+  </section>
+
+  <section id="rate">
+    <div class="section-title">
+      <div class="section-number">08</div>
+      <h2>Rate Limiting with Redis</h2>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h3>Example requirement</h3>
+        <div class="big-number">100</div>
+        <p><strong>requests per minute per user</strong></p>
+        <p>
+          Redis can maintain a distributed counter associated with a user or IP and a time window.
+        </p>
+      </div>
+
+      <div class="card card-blue">
+        <h3>Why Redis?</h3>
+        <ul>
+          <li>Fast counter operations.</li>
+          <li>TTL can automatically expire the window.</li>
+          <li>All Node.js instances can share the same counters.</li>
+          <li>Useful for APIs running behind a load balancer.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="flow">
+      <div class="flow-box">Request</div>
+      <div class="arrow">→</div>
+      <div class="flow-box">Node.js</div>
+      <div class="arrow">→</div>
+      <div class="flow-box redis">Redis Counter</div>
+      <div class="arrow">→</div>
+      <div class="flow-box">Allow / Reject</div>
+    </div>
+
+    <div class="callout info">
+      <strong>Interview-ready:</strong>
+      “I can use Redis as a shared counter store for distributed rate limiting. Each request increments
+      a user/IP counter and the counter expires after the configured window, so multiple Node.js instances
+      enforce the same limit.”
+    </div>
+  </section>
+
+  <section id="pubsub">
+    <div class="section-title">
+      <div class="section-number">09</div>
+      <h2>Redis Pub/Sub</h2>
+    </div>
+
+    <div class="architecture">
+      <div class="arch-row">
+        <div class="arch-node"><strong>Publisher</strong><small>Publishes message</small></div>
+        <div class="arrow">→</div>
+        <div class="arch-node redis"><strong>Redis Channel</strong><small>Routes message</small></div>
+        <div class="arrow">→</div>
+        <div class="arch-node"><strong>Subscriber A</strong><small>Receives message</small></div>
+        <div class="arrow">→</div>
+        <div class="arch-node"><strong>Subscriber B</strong><small>Receives message</small></div>
+      </div>
+    </div>
+
+    <div class="grid" style="margin-top:16px;">
+      <div class="card">
+        <h3>Good use cases</h3>
+        <ul>
+          <li>Real-time notifications.</li>
+          <li>Live UI updates.</li>
+          <li>Communication between application instances.</li>
+          <li>Simple transient events where missed messages are acceptable.</li>
+        </ul>
+      </div>
+
+      <div class="card card-accent">
+        <h3>Critical limitation ⚠️</h3>
+        <p>
+          Traditional Redis Pub/Sub is <strong>not a durable message queue</strong>.
+        </p>
+        <p>
+          If a subscriber is disconnected when a message is published, that subscriber can miss the message.
+        </p>
+      </div>
+    </div>
+
+    <table style="margin-top:16px;">
+      <thead>
+        <tr>
+          <th>Requirement</th>
+          <th>Better fit</th>
+          <th>Why</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Transient real-time notification</td>
+          <td>Redis Pub/Sub</td>
+          <td>Very simple and fast.</td>
+        </tr>
+        <tr>
+          <td>Durable distributed event streaming</td>
+          <td>Kafka</td>
+          <td>Persistence, replay and consumer groups.</td>
+        </tr>
+        <tr>
+          <td>Work queue / broker semantics</td>
+          <td>RabbitMQ</td>
+          <td>Strong messaging and routing features.</td>
+        </tr>
+        <tr>
+          <td>Cloud-managed queue</td>
+          <td>SQS</td>
+          <td>Managed durable queueing in AWS.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="persistence">
+    <div class="section-title">
+      <div class="section-number">10</div>
+      <h2>Redis Persistence — RDB vs AOF</h2>
+    </div>
+
+    <p>
+      Redis is primarily an in-memory store, but it can persist data to disk. Two important persistence
+      mechanisms are <strong>RDB</strong> and <strong>AOF</strong>.
+    </p>
+
+    <table>
+      <thead>
+        <tr>
+          <th></th>
+          <th>RDB</th>
+          <th>AOF</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Meaning</strong></td>
+          <td>Point-in-time snapshots.</td>
+          <td>Records write operations for reconstruction.</td>
+        </tr>
+        <tr>
+          <td><strong>Typical advantage</strong></td>
+          <td>Compact files and efficient recovery.</td>
+          <td>Can provide lower potential data loss with appropriate configuration.</td>
+        </tr>
+        <tr>
+          <td><strong>Trade-off</strong></td>
+          <td>Changes since the latest snapshot can be lost.</td>
+          <td>More disk I/O and larger persistence footprint can occur.</td>
+        </tr>
+        <tr>
+          <td><strong>Best thought of as</strong></td>
+          <td>Snapshots.</td>
+          <td>Write history / log.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout warning">
+      <strong>Interview nuance:</strong>
+      Persistence improves Redis's ability to recover data, but Redis should not automatically be treated as
+      the durable source of truth for business data just because persistence is enabled.
+    </div>
+  </section>
+
+  <section id="replication">
+    <div class="section-title">
+      <div class="section-number">11</div>
+      <h2>Redis Replication</h2>
+    </div>
+
+    <div class="architecture">
+      <div class="arch-row">
+        <div class="arch-node redis">
+          <strong>Primary</strong>
+          <small>Accepts writes</small>
+        </div>
+        <div class="arrow">→</div>
+        <div class="arch-node">
+          <strong>Replica 1</strong>
+          <small>Copy of data</small>
+        </div>
+        <div class="arrow">→</div>
+        <div class="arch-node">
+          <strong>Replica 2</strong>
+          <small>Copy of data</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid" style="margin-top:16px;">
+      <div class="card">
+        <h3>Why replicate?</h3>
+        <ul>
+          <li>Redundancy.</li>
+          <li>Higher availability.</li>
+          <li>Recovery from node failure.</li>
+          <li>Potential read scaling.</li>
+          <li>Foundation for failover architectures.</li>
+        </ul>
+      </div>
+
+      <div class="card card-accent">
+        <h3>Failover concept</h3>
+        <p>
+          If the primary becomes unavailable, a suitable high-availability setup can promote a replica
+          or redirect clients to an available primary.
+        </p>
+        <p class="muted">Exact failover behavior depends on the Redis deployment architecture.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="cluster">
+    <div class="section-title">
+      <div class="section-number">12</div>
+      <h2>Redis Cluster</h2>
+    </div>
+
+    <div class="card">
+      <div class="definition">Cluster = distribute data across multiple Redis nodes.</div>
+      <p>
+        Redis Cluster provides <strong>sharding</strong>. Instead of requiring one Redis node to hold
+        the complete dataset, key ranges are distributed across cluster nodes.
+      </p>
+    </div>
+
+    <div class="architecture" style="margin-top:16px;">
+      <div class="arch-row">
+        <div class="arch-node"><strong>Application</strong><small>Node.js instances</small></div>
+      </div>
+      <div class="arrow-down">↓</div>
+      <div class="arch-row">
+        <div class="arch-node redis"><strong>Redis Node A</strong><small>Shard / data subset</small></div>
+        <div class="arch-node redis"><strong>Redis Node B</strong><small>Shard / data subset</small></div>
+        <div class="arch-node redis"><strong>Redis Node C</strong><small>Shard / data subset</small></div>
+      </div>
+    </div>
+
+    <div class="grid" style="margin-top:16px;">
+      <div class="card">
+        <h3>Benefits</h3>
+        <ul>
+          <li>Data sharding.</li>
+          <li>More aggregate memory capacity.</li>
+          <li>Horizontal scaling.</li>
+          <li>Potentially higher throughput.</li>
+        </ul>
+      </div>
+
+      <div class="card card-blue">
+        <h3>When would you consider it?</h3>
+        <p>
+          When a single Redis node cannot comfortably handle the required dataset size,
+          throughput or scaling requirements.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section id="replication-vs-cluster">
+    <div class="section-title">
+      <div class="section-number">13</div>
+      <h2>Replication vs Redis Cluster</h2>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Concept</th>
+          <th>Primary goal</th>
+          <th>Simple mental model</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Replication</strong></td>
+          <td>Copies / redundancy / availability.</td>
+          <td>“Make another copy of my data.”</td>
+        </tr>
+        <tr>
+          <td><strong>Cluster</strong></td>
+          <td>Distribution / sharding / horizontal scale.</td>
+          <td>“Split my data across multiple nodes.”</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout success">
+      <strong>⭐ Important:</strong>
+      Replication and clustering are not mutually exclusive. A clustered deployment can also use replicas
+      for redundancy and failover.
+    </div>
+
+    <div class="memory">
+      <div class="memory-title">🧠 Remember this</div>
+      <div class="memory-map">
+        <div class="memory-node">Replication<span>COPIES</span></div>
+        <div class="memory-node">Cluster<span>SHARDS</span></div>
+        <div class="memory-node">Together<span>SCALE + HA</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="comparison">
+    <div class="section-title">
+      <div class="section-number">14</div>
+      <h2>Redis vs MongoDB vs Kafka vs RabbitMQ</h2>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Technology</th>
+          <th>Primary role</th>
+          <th>Strength</th>
+          <th>Choose it when...</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Redis</strong></td>
+          <td>In-memory data store / cache / shared state</td>
+          <td>Very low latency</td>
+          <td>You need fast temporary/shared data access, caching or counters.</td>
+        </tr>
+        <tr>
+          <td><strong>MongoDB</strong></td>
+          <td>Persistent document database</td>
+          <td>Durable application data</td>
+          <td>You need the primary source of truth for document-oriented business data.</td>
+        </tr>
+        <tr>
+          <td><strong>Kafka</strong></td>
+          <td>Distributed event streaming</td>
+          <td>Durable streams and replay</td>
+          <td>You need high-throughput durable events, replay and stream processing.</td>
+        </tr>
+        <tr>
+          <td><strong>RabbitMQ</strong></td>
+          <td>Message broker / queues</td>
+          <td>Routing and work distribution</td>
+          <td>You need queueing, acknowledgements and flexible message routing.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout important">
+      <strong>Do not say:</strong> “Redis is a faster MongoDB.”
+      <br>
+      Better: “Redis and MongoDB solve different problems. MongoDB can be the durable source of truth,
+      while Redis can be a low-latency cache or shared state layer.”
+    </div>
+  </section>
+
+  <section id="node-cache">
+    <div class="section-title">
+      <div class="section-number">15</div>
+      <h2>Redis vs Node.js In-Memory Cache</h2>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Aspect</th>
+          <th>Node.js process memory</th>
+          <th>Redis</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Location</strong></td>
+          <td>Inside one Node.js process.</td>
+          <td>Separate shared service.</td>
+        </tr>
+        <tr>
+          <td><strong>Multiple servers</strong></td>
+          <td>Each server has different cache.</td>
+          <td>All servers can access shared cache.</td>
+        </tr>
+        <tr>
+          <td><strong>Restart</strong></td>
+          <td>Process memory is lost.</td>
+          <td>Redis has independent lifecycle and can be configured for persistence.</td>
+        </tr>
+        <tr>
+          <td><strong>Horizontal scaling</strong></td>
+          <td>Requires additional cache coordination.</td>
+          <td>Designed to act as shared infrastructure.</td>
+        </tr>
+        <tr>
+          <td><strong>Operational complexity</strong></td>
+          <td>Very low.</td>
+          <td>Requires running and monitoring Redis.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout info">
+      <strong>Rule of thumb:</strong>
+      If you have one simple process and tiny cache requirements, local memory may be enough.
+      Once you have multiple application instances and need shared state, Redis becomes much more useful.
+    </div>
+  </section>
+
+  <section id="failure">
+    <div class="section-title">
+      <div class="section-number">16</div>
+      <h2>What Happens if Redis Goes Down?</h2>
+    </div>
+
+    <div class="grid">
+      <div class="card card-accent">
+        <h3>For cache data</h3>
+        <p>
+          If MongoDB remains available, the application can fall back to MongoDB for cacheable data
+          and optionally rebuild the Redis cache.
+        </p>
+      </div>
+
+      <div class="card card-blue">
+        <h3>For shared state</h3>
+        <p>
+          Impact depends on what Redis stores. Session, rate-limit or temporary workflow functionality
+          may need a different fallback or HA design.
+        </p>
+      </div>
+    </div>
+
+    <div class="callout warning">
+      <strong>⚠️ Biggest risk: cache stampede</strong>
+      If Redis fails and thousands of requests simultaneously fall back to MongoDB,
+      MongoDB can suddenly receive a huge traffic spike.
+    </div>
+
+    <div class="grid-3">
+      <div class="card compact"><h3>High Availability</h3><p>Use appropriate Redis HA architecture and failover.</p></div>
+      <div class="card compact"><h3>Monitoring</h3><p>Monitor memory, latency, connections, errors and hit ratio.</p></div>
+      <div class="card compact"><h3>Controlled Fallback</h3><p>Protect MongoDB using rate controls, request coalescing or other safeguards where appropriate.</p></div>
+    </div>
+  </section>
+
+  <section id="eviction">
+    <div class="section-title">
+      <div class="section-number">17</div>
+      <h2>Redis Memory Full &amp; Eviction</h2>
+    </div>
+
+    <div class="card">
+      <div class="definition">Redis memory is finite.</div>
+      <p>
+        When configured memory limits are reached, Redis needs a defined strategy for handling new writes.
+        Eviction policies determine which keys can be removed.
+      </p>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h3>Why eviction can be acceptable</h3>
+        <p>
+          For a cache, the Redis copy is not the source of truth. If an old cache entry is evicted,
+          the application can usually fetch the data again from MongoDB and repopulate Redis.
+        </p>
+      </div>
+
+      <div class="card card-accent">
+        <h3>Why policy matters</h3>
+        <p>
+          The eviction policy should match the workload. A cache workload may prefer removing
+          less useful keys, while workloads containing important non-cache data require more careful planning.
+        </p>
+      </div>
+    </div>
+
+    <div class="callout warning">
+      <strong>Interview point:</strong>
+      Never answer “Redis automatically deletes random data when memory is full.”
+      Explain that memory limits and an appropriate configured eviction policy determine what happens.
+    </div>
+  </section>
+
+  <section id="multi-region">
+    <div class="section-title">
+      <div class="section-number">18</div>
+      <h2>Multi-Region Redis</h2>
+    </div>
+
+    <div class="card">
+      <p>
+        In a multi-region application, you may have Redis infrastructure close to users in different regions.
+        This can reduce cross-region latency, but it introduces architectural complexity.
+      </p>
+    </div>
+
+    <div class="grid-3" style="margin-top:16px;">
+      <div class="card compact"><h3>Latency</h3><p>Keep requests close to users where possible.</p></div>
+      <div class="card compact"><h3>Replication</h3><p>Consider how data moves between regions.</p></div>
+      <div class="card compact"><h3>Consistency</h3><p>Decide how much cross-region staleness is acceptable.</p></div>
+      <div class="card compact"><h3>Failover</h3><p>Plan what happens when an entire region fails.</p></div>
+      <div class="card compact"><h3>Data Residency</h3><p>Regional regulations may affect where data can be stored.</p></div>
+      <div class="card compact"><h3>Complexity</h3><p>Multi-region systems require more operational and consistency planning.</p></div>
+    </div>
+
+    <div class="callout info">
+      <strong>Interview answer:</strong>
+      “I would not introduce multi-region Redis just for the sake of scale. I would first establish the
+      latency, availability and data-residency requirements, then choose an appropriate replication and failover strategy.”
+    </div>
+  </section>
+
+  <section id="10k">
+    <div class="section-title">
+      <div class="section-number">19</div>
+      <h2>Design Redis for 10,000 Requests/Second</h2>
+    </div>
+
+    <div class="card">
+      <div class="big-number">10K RPS</div>
+      <p>
+        The goal is not simply “put Redis in front of MongoDB.” Explain how the complete system handles
+        traffic, scaling, failures and cache behavior.
+      </p>
+    </div>
+
+    <div class="architecture" style="margin-top:18px;">
+      <div class="arch-row">
+        <div class="arch-node"><strong>Clients</strong><small>Web / Mobile / APIs</small></div>
+      </div>
+
+      <div class="arrow-down">↓</div>
+
+      <div class="arch-row">
+        <div class="arch-node lb"><strong>Load Balancer</strong><small>Distribute traffic</small></div>
+      </div>
+
+      <div class="arrow-down">↓</div>
+
+      <div class="arch-row">
+        <div class="arch-node"><strong>Node.js #1</strong><small>Stateless</small></div>
+        <div class="arch-node"><strong>Node.js #2</strong><small>Stateless</small></div>
+        <div class="arch-node"><strong>Node.js #3</strong><small>Stateless</small></div>
+        <div class="arch-node"><strong>Node.js #N</strong><small>Scale horizontally</small></div>
+      </div>
+
+      <div class="arrow-down">↓</div>
+
+      <div class="arch-row">
+        <div class="arch-node redis"><strong>Redis</strong><small>Cache / counters / shared state</small></div>
+        <div class="arch-node mongo"><strong>MongoDB</strong><small>Source of truth</small></div>
+      </div>
+    </div>
+
+    <div class="scenario">
+      <h3>Example: 95% Cache Hit Rate</h3>
+      <div class="grid-3">
+        <div class="card compact">
+          <div class="big-number">10,000</div>
+          <p>requests/second</p>
+        </div>
+        <div class="card compact">
+          <div class="big-number">95%</div>
+          <p>served from Redis</p>
+        </div>
+        <div class="card compact">
+          <div class="big-number">5%</div>
+          <p>fall through to MongoDB</p>
+        </div>
+      </div>
+
+      <div class="callout success">
+        At a simplified steady-state level, a 95% hit rate means roughly <strong>9,500 requests/second</strong>
+        can be served from the cache and about <strong>500 requests/second</strong> need a database fallback.
+        Real systems need to account for request patterns, misses, writes, hot keys, bursts and failures.
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h3>Scaling strategy</h3>
+        <ul>
+          <li>Keep Node.js instances stateless where possible.</li>
+          <li>Use shared Redis for cache and distributed state.</li>
+          <li>Use Redis Cluster when one Redis node cannot meet memory or throughput requirements.</li>
+          <li>Use replication/HA where availability requirements demand it.</li>
+          <li>Use suitable MongoDB scaling independently.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3>Production concerns</h3>
+        <ul>
+          <li>Monitor cache hit/miss ratio.</li>
+          <li>Monitor Redis latency and memory.</li>
+          <li>Plan for Redis failure.</li>
+          <li>Prevent cache stampedes.</li>
+          <li>Use TTLs appropriately.</li>
+          <li>Design cache keys carefully.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="interview-answer" style="margin-top:18px;">
+      <h3>🎤 Strong interview response</h3>
+      <p>
+        “For 10,000 requests per second, I would put multiple stateless Node.js instances behind a load balancer
+        and use Redis as the shared caching layer. I would use cache-aside so Redis handles frequent reads while
+        MongoDB remains the source of truth. I would use TTLs and an explicit invalidation strategy, monitor hit
+        ratio and Redis latency, and introduce Redis Cluster if the memory or throughput requirement exceeds a single
+        node. I would also design a controlled MongoDB fallback and protect against cache stampedes if Redis fails.”
+      </p>
+    </div>
+  </section>
+
+  <section id="los">
+    <div class="section-title">
+      <div class="section-number">20</div>
+      <h2>Redis in a Loan Origination System</h2>
+    </div>
+
+    <div class="callout info">
+      <strong>Architecture exercise:</strong>
+      Redis could be introduced into a Loan Origination System for selected high-frequency or short-lived data.
+      This does <strong>not</strong> imply that Redis is already implemented in the system.
+    </div>
+
+    <div class="grid-3">
+      <div class="card compact">
+        <h3>Loan/Product Config</h3>
+        <p>Cache frequently accessed loan-product configuration when the data changes relatively infrequently.</p>
+      </div>
+
+      <div class="card compact">
+        <h3>Verification State</h3>
+        <p>Store short-lived temporary verification state where appropriate.</p>
+      </div>
+
+      <div class="card compact">
+        <h3>Rate Limiting</h3>
+        <p>Protect KYC, eligibility or other APIs from excessive requests.</p>
+      </div>
+
+      <div class="card compact">
+        <h3>Session State</h3>
+        <p>Share session information across multiple backend instances.</p>
+      </div>
+
+      <div class="card compact">
+        <h3>Short-lived Responses</h3>
+        <p>Cache expensive API responses for a short period when business rules permit.</p>
+      </div>
+
+      <div class="card compact">
+        <h3>Temporary Workflow Data</h3>
+        <p>Store transient information that does not need to become the durable system of record.</p>
+      </div>
+    </div>
+
+    <div class="callout warning">
+      <strong>Financial-system caution:</strong>
+      Loan applications, KYC records and other critical business data should have an appropriate durable
+      source of truth and consistency model. Redis should not be casually made the only copy of critical data.
+    </div>
+
+    <div class="interview-answer">
+      <h3>🎤 How would you use Redis in an LOS?</h3>
+      <p>
+        “I would consider Redis for frequently accessed loan-product configuration, short-lived verification state,
+        API rate limiting, sessions and selected cacheable responses. I would keep the durable loan and customer
+        data in the primary database and use TTL plus explicit invalidation to manage cached data.”
+      </p>
+    </div>
+  </section>
+
+  <section id="not-use">
+    <div class="section-title">
+      <div class="section-number">21</div>
+      <h2>When NOT to Use Redis</h2>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h3>❌ Rarely accessed data</h3>
+        <p>If data is rarely read, adding a cache may not provide enough benefit to justify the complexity.</p>
+      </div>
+
+      <div class="card">
+        <h3>❌ No meaningful latency benefit</h3>
+        <p>If the database is already fast enough, Redis may add unnecessary infrastructure.</p>
+      </div>
+
+      <div class="card">
+        <h3>❌ Primary durable source of truth</h3>
+        <p>Do not automatically choose Redis as the only durable store for critical business data.</p>
+      </div>
+
+      <div class="card">
+        <h3>❌ Very difficult invalidation</h3>
+        <p>If consistency requirements make cache invalidation extremely complex, reconsider whether caching is worth it.</p>
+      </div>
+
+      <div class="card">
+        <h3>❌ Durable event streaming</h3>
+        <p>For durable event streaming, replay and large-scale event processing, Kafka may be a better fit.</p>
+      </div>
+
+      <div class="card">
+        <h3>❌ Operational overhead</h3>
+        <p>Every new infrastructure component needs monitoring, security, capacity planning and failure handling.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="60-sec">
+    <div class="section-title">
+      <div class="section-number">22</div>
+      <h2>60-Second Redis Interview Answer</h2>
+    </div>
+
+    <div class="interview-answer">
+      <h3>🎤 Memorize the structure, not every word</h3>
+      <p>
+        “Redis is an in-memory data store commonly used as a low-latency cache and for shared application state.
+        In a Node.js and MongoDB application, I would commonly use the cache-aside pattern: first check Redis,
+        return the value on a cache hit, and on a miss query MongoDB, store the result in Redis with an appropriate
+        TTL, and return it. MongoDB remains the source of truth.
+      </p>
+      <p>
+        Redis can also be used for distributed sessions, rate limiting, temporary tokens and transient Pub/Sub
+        notifications. For cache consistency, I would combine TTL with explicit invalidation or cache updates
+        depending on the business requirement.
+      </p>
+      <p>
+        For availability, Redis supports replication and failover-oriented architectures, while Redis Cluster
+        provides sharding for horizontal scaling. Replication means copies of data; clustering means distributing
+        data across nodes. If Redis fails, I would use an appropriate fallback for cacheable data, but I would also
+        protect MongoDB from a cache stampede. Finally, I would not use traditional Redis Pub/Sub when durable
+        message delivery is required; Kafka or a queueing system may be more appropriate.”
+      </p>
+    </div>
+  </section>
+
+  <section id="memory">
+    <div class="section-title">
+      <div class="section-number">23</div>
+      <h2>Quick Memory Map</h2>
+    </div>
+
+    <div class="memory">
+      <div class="memory-title">🧠 Redis in one page</div>
+
+      <div class="memory-map">
+        <div class="memory-node">
+          Redis
+          <span>IN-MEMORY → FAST</span>
+        </div>
+        <div class="memory-node">
+          Cache
+          <span>FAST ACCESS</span>
+        </div>
+        <div class="memory-node">
+          Sessions
+          <span>SHARED STATE</span>
+        </div>
+        <div class="memory-node">
+          Rate Limiting
+          <span>COUNTERS + TTL</span>
+        </div>
+        <div class="memory-node">
+          Pub/Sub
+          <span>REAL-TIME / NON-DURABLE</span>
+        </div>
+        <div class="memory-node">
+          Temporary State
+          <span>OTP / TOKENS / WORKFLOWS</span>
+        </div>
+        <div class="memory-node">
+          TTL
+          <span>EXPIRATION</span>
+        </div>
+        <div class="memory-node">
+          Invalidation
+          <span>FRESHNESS</span>
+        </div>
+        <div class="memory-node">
+          Eviction
+          <span>MEMORY MANAGEMENT</span>
+        </div>
+        <div class="memory-node">
+          Replication
+          <span>COPIES / HA</span>
+        </div>
+        <div class="memory-node">
+          Cluster
+          <span>SHARDING / SCALE</span>
+        </div>
+        <div class="memory-node">
+          MongoDB
+          <span>SOURCE OF TRUTH</span>
+        </div>
+      </div>
+
+      <div class="callout important" style="margin-bottom:0;">
+        <strong>Fast recall:</strong>
+        Redis → In Memory → Fast → Cache / Sessions / Rate Limiting / Pub/Sub / Temporary State
+        → TTL → Invalidation / Eviction → Replication = Copies / HA → Cluster = Sharding / Scale.
+      </div>
+    </div>
+  </section>
+
+  <section id="questions">
+    <div class="section-title">
+      <div class="section-number">24</div>
+      <h2>Top Redis Interview Questions</h2>
+    </div>
+
+    <div class="question-list">
+      <div class="question">What is Redis and why is it fast?</div>
+      <div class="question">Redis vs MongoDB?</div>
+      <div class="question">Explain the cache-aside pattern.</div>
+      <div class="question">What is a cache hit vs a cache miss?</div>
+      <div class="question">What is cache invalidation?</div>
+      <div class="question">How does Redis manage sessions across multiple Node.js servers?</div>
+      <div class="question">How can Redis implement distributed rate limiting?</div>
+      <div class="question">What is Redis Pub/Sub?</div>
+      <div class="question">Why is traditional Redis Pub/Sub not durable?</div>
+      <div class="question">RDB vs AOF?</div>
+      <div class="question">What is Redis replication?</div>
+      <div class="question">Replication vs Redis Cluster?</div>
+      <div class="question">What happens if Redis goes down?</div>
+      <div class="question">What happens when Redis memory is full?</div>
+      <div class="question">How would you design Redis for 10,000 requests/second?</div>
+      <div class="question">Redis vs Kafka?</div>
+      <div class="question">Redis vs RabbitMQ?</div>
+      <div class="question">Redis vs Node.js in-memory cache?</div>
+      <div class="question">How would you prevent a cache stampede?</div>
+      <div class="question">When should you not use Redis?</div>
+    </div>
+  </section>
+
+  <section id="rapid">
+    <div class="section-title">
+      <div class="section-number">25</div>
+      <h2>Rapid-Fire Answers</h2>
+    </div>
+
+    <div class="grid">
+      <div class="card compact">
+        <h3>Redis?</h3>
+        <p>Fast in-memory data store commonly used for caching and shared application state.</p>
+      </div>
+
+      <div class="card compact">
+        <h3>TTL?</h3>
+        <p>Time after which a Redis key expires.</p>
+      </div>
+
+      <div class="card compact">
+        <h3>Cache hit?</h3>
+        <p>Requested value exists in Redis.</p>
+      </div>
+
+      <div class="card compact">
+        <h3>Cache miss?</h3>
+        <p>Value is absent from Redis, so the application falls back to the primary data source.</p>
+      </div>
+
+      <div class="card compact">
+        <h3>Cache-aside?</h3>
+        <p>Application checks cache first, then database on miss, and populates the cache.</p>
+      </div>
+
+      <div class="card compact">
+        <h3>Invalidation?</h3>
+        <p>Removing or refreshing stale cached data.</p>
+      </div>
+
+      <div class="card compact">
+        <h3>Replication?</h3>
+        <p>Maintaining copies of Redis data for redundancy and availability.</p>
+      </div>
+
+      <div class="card compact">
+        <h3>Cluster?</h3>
+        <p>Distributing Redis data across nodes using sharding for horizontal scale.</p>
+      </div>
+
+      <div class="card compact">
+        <h3>Pub/Sub?</h3>
+        <p>Publisher sends messages to a channel and subscribers receive them.</p>
+      </div>
+
+      <div class="card compact">
+        <h3>Pub/Sub limitation?</h3>
+        <p>Traditional Pub/Sub is not durable; disconnected subscribers can miss messages.</p>
+      </div>
+
+      <div class="card compact">
+        <h3>Redis down?</h3>
+        <p>Use an appropriate fallback for cacheable data and protect the database from overload.</p>
+      </div>
+
+      <div class="card compact">
+        <h3>MongoDB role?</h3>
+        <p>Persistent source of truth for durable document-oriented business data.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="final-check">
+    <div class="section-title">
+      <div class="section-number">26</div>
+      <h2>Before the Interview — Final Checklist</h2>
+    </div>
+
+    <div class="card">
+      <ul class="checklist">
+        <li>I can explain Redis in 20 seconds without saying it replaces MongoDB.</li>
+        <li>I can explain cache hit, cache miss and cache-aside.</li>
+        <li>I understand why TTL is useful.</li>
+        <li>I can explain cache invalidation and stale data.</li>
+        <li>I can explain Redis sessions with multiple Node.js instances.</li>
+        <li>I can explain distributed rate limiting.</li>
+        <li>I know that traditional Redis Pub/Sub is not durable.</li>
+        <li>I know the difference between RDB and AOF.</li>
+        <li>I can explain replication as copies and Cluster as sharding.</li>
+        <li>I can compare Redis with MongoDB, Kafka and RabbitMQ.</li>
+        <li>I can explain what happens if Redis goes down.</li>
+        <li>I understand memory limits and eviction.</li>
+        <li>I can design a 10K RPS architecture using Redis.</li>
+        <li>I can identify suitable Redis use cases in an LOS.</li>
+        <li>I know situations where Redis should not be introduced.</li>
+      </ul>
+    </div>
+
+    <div class="interview-answer" style="margin-top:18px;">
+      <h3>🏆 The core story to remember</h3>
+      <p>
+        <strong>Request → Node.js → Redis → Cache Hit → Fast Response</strong>
+      </p>
+      <p>
+        <strong>Cache Miss → MongoDB → Store in Redis with TTL → Response</strong>
+      </p>
+      <p>
+        <strong>Multiple servers → Shared Redis</strong>
+      </p>
+      <p>
+        <strong>More availability → Replication</strong>
+      </p>
+      <p>
+        <strong>More distributed capacity → Cluster / Sharding</strong>
+      </p>
+      <p>
+        <strong>Durable events → Kafka / appropriate message broker, not traditional Redis Pub/Sub</strong>
+      </p>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <strong>Redis Interview Cheat Sheet</strong><br>
+  Focus on concepts, architecture, trade-offs and failure handling — not command memorization.
+</footer>
+
+</body>
+</html>

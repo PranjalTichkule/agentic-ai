@@ -1,0 +1,57 @@
+<aside class="sidebar" aria-label="Application navigation and conversations">
+  <header class="sidebar-header">
+    <a class="brand" routerLink="/chat" aria-label="Agentic AI home">
+      <span class="brand-mark" aria-hidden="true">A</span>
+      <span>Agentic AI</span>
+    </a>
+
+    <button
+      class="new-chat-button"
+      type="button"
+      [disabled]="isCreating()"
+      (click)="createConversation()"
+    >
+      <span aria-hidden="true">+</span>
+      <span>New Chat</span>
+    </button>
+
+    <nav class="primary-navigation" aria-label="Main navigation">
+      <a routerLink="/chat" routerLinkActive="is-current" [routerLinkActiveOptions]="{ exact: true }">
+        Chat
+      </a>
+      <a routerLink="/memories" routerLinkActive="is-current">Memories</a>
+      <a routerLink="/documents" routerLinkActive="is-current">Documents</a>
+      <a routerLink="/redis" routerLinkActive="is-current">Redis</a>
+    </nav>
+  </header>
+
+  <section class="conversation-section" aria-labelledby="conversation-heading">
+    <h2 id="conversation-heading">Conversations</h2>
+    @if (errorMessage()) {
+      <p class="sidebar-error" role="alert">{{ errorMessage() }}</p>
+    }
+
+    @if (isLoading()) {
+      <p class="sidebar-state" role="status">Loading conversations...</p>
+    } @else if (conversations().length === 0) {
+      @if (!errorMessage()) {
+        <p class="sidebar-state">No conversations yet.</p>
+      }
+    } @else {
+      <ul class="conversation-list">
+        @for (conversation of conversations(); track conversation._id) {
+          <li>
+            <button
+              class="conversation-item"
+              type="button"
+              [class.is-active]="activeConversationId() === conversation._id"
+              (click)="selectConversation(conversation)"
+            >
+              {{ conversation.title }}
+            </button>
+          </li>
+        }
+      </ul>
+    }
+  </section>
+</aside>

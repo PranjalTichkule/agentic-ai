@@ -1,0 +1,289 @@
+.documents-page {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px 16px 32px;
+  color: #18211d;
+  background: #ffffff;
+  font-size: 13px;
+  overflow-y: auto;
+}
+
+.documents-header {
+  min-height: 56px;
+  margin-bottom: 2px;
+}
+
+.documents-header h1 {
+  color: #111916;
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.documents-header p {
+  font-size: 13px;
+}
+
+.library-count {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  color: #5e6963;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.library-count-label {
+  margin-right: 3px;
+  color: #7b857f;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.library-count strong {
+  color: #1d2923;
+  font-size: 15px;
+}
+
+.upload-toolbar {
+  min-height: 40px;
+  margin: 2px 0 0;
+}
+
+.choose-file-button,
+.upload-button {
+  min-height: 36px;
+  border-color: #c9d2cc;
+  border-radius: 6px;
+  color: #26342d;
+  background: #ffffff;
+  font-size: 12px;
+}
+
+.choose-file-button:hover,
+.upload-button:hover:not(:disabled) {
+  border-color: #94aa9a;
+  color: #174b3b;
+  background: #f4f8f5;
+}
+
+.upload-button:disabled {
+  color: #7a847e;
+  background: #f3f5f3;
+}
+
+.upload-symbol {
+  display: inline-block;
+  margin-right: 7px;
+  font-size: 17px;
+  line-height: 0.8;
+}
+
+.selected-file-name {
+  max-width: min(360px, 45vw);
+  overflow: hidden;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.selected-file-name.has-file {
+  color: #34453c !important;
+}
+
+.upload-progress-card {
+  display: flex;
+  width: min(100%, 440px);
+  min-height: 76px;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 12px;
+  border: 1px solid #d7dfda;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgb(30 48 38 / 5%);
+}
+
+.pdf-mark,
+.document-mark {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid #d6ddd8;
+  border-radius: 6px;
+  color: #a4483f;
+  background: #fafbfa;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.pdf-mark {
+  width: 38px;
+  height: 48px;
+}
+
+.upload-progress-content {
+  display: grid;
+  min-width: 0;
+  flex: 1;
+  gap: 6px;
+}
+
+.upload-progress-heading {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.upload-progress-heading strong {
+  overflow: hidden;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.upload-progress-heading .badge {
+  flex: 0 0 auto;
+  font-size: 9px;
+  font-weight: 600;
+}
+
+.indeterminate-track {
+  height: 4px;
+  overflow: hidden;
+  border-radius: 4px;
+  background: #e8eeea;
+}
+
+.indeterminate-track span {
+  display: block;
+  width: 36%;
+  height: 100%;
+  border-radius: inherit;
+  background: #176b56;
+  animation: upload-progress 1.4s ease-in-out infinite alternate;
+}
+
+.upload-progress-label {
+  color: #68746d;
+  font-size: 10px;
+}
+
+@keyframes upload-progress {
+  from { transform: translateX(-10%); }
+  to { transform: translateX(190%); }
+}
+
+.documents-page .alert {
+  margin: 0;
+  padding: 10px 12px;
+  font-size: 12px;
+}
+
+.documents-page > [role="status"] {
+  flex: 1;
+}
+
+.documents-empty {
+  background: #ffffff;
+}
+
+.documents-table-wrap {
+  border: 1px solid #d6dfd9;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.documents-table-wrap .table {
+  min-width: 690px;
+  font-size: 12px;
+}
+
+.documents-table-wrap thead th {
+  padding: 10px 12px;
+  border-bottom: 1px solid #d6dfd9;
+  color: #37453d;
+  background: #f3f6f4;
+  font-size: 11px;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.documents-table-wrap tbody td {
+  padding: 11px 12px;
+  border-color: #e7ece8;
+  color: #28342d;
+  vertical-align: middle;
+}
+
+.documents-table-wrap tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.document-name {
+  min-width: 190px;
+}
+
+.document-mark {
+  display: inline-grid;
+  width: 22px;
+  height: 27px;
+  margin-right: 8px;
+  vertical-align: middle;
+  font-size: 7px;
+}
+
+.documents-table-wrap .badge {
+  border: 1px solid rgb(25 56 39 / 12%);
+  border-radius: 999px;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.delete-button {
+  padding: 4px 8px;
+  font-size: 11px;
+}
+
+.delete-button:disabled {
+  opacity: 0.65;
+}
+
+.documents-page button:focus-visible {
+  outline: 2px solid #176b56;
+  outline-offset: 2px;
+}
+
+@media (max-width: 640px) {
+  .documents-page {
+    gap: 13px;
+    padding: 18px 12px 24px;
+  }
+
+  .documents-header h1 {
+    font-size: 23px;
+  }
+
+  .library-count {
+    margin-left: auto;
+  }
+
+  .selected-file-name {
+    max-width: calc(100vw - 170px);
+  }
+
+  .upload-progress-card {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .indeterminate-track span {
+    animation-duration: 4s;
+  }
+}
