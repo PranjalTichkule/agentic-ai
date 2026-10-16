@@ -43,3 +43,9 @@ rag-service/main.py
 rag-service/app/main.py
 rag-service/app/ingest.py
 rag-service/app/retrieve.py
+
+# Personal resume files kept only in the local workspace
+frontend/public/html/pranjal_resume.html
+frontend/public/html/pranjal_resume_files/
+frontend/public/html/resume_pranjal.html
+frontend/public/html/resume_pranjal_files/
