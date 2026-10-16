@@ -41,6 +41,15 @@ python -m uvicorn app.api:app --reload --port 8000
 
 Open `http://localhost:8000/docs`. Use `POST /documents` to upload a PDF, then `POST /rag/query` with a question. `GET /health` checks that the API is running. Uploaded PDFs, metadata, and the local ChromaDB are stored locally and are not part of the Git repository.
 
+### RAG request flow
+
+1. The frontend sends a PDF to FastAPI's `POST /documents` endpoint.
+2. `app/document_service.py` extracts PDF pages, cleans and chunks the text, creates Gemini embeddings, and stores the chunks in ChromaDB. `app/document_repository.py` stores document metadata locally.
+3. The Agentic backend calls FastAPI over HTTP through its RAG MCP tool; it does not import the Python service directly.
+4. FastAPI's `POST /rag/query` embeds the question, retrieves similar chunks, and asks Gemini to answer using the retrieved context. The response includes source details.
+
+The FastAPI runtime is `app/api.py`. Its supporting modules are `document_service.py`, `document_repository.py`, `pdf_loader.py`, `text_cleaner.py`, `chunker.py`, `embedding_service.py`, `vector_store.py`, `rag_service.py`, `retriever.py`, `similarity.py`, and `generation_service.py`. The standalone `test_*.py`, cleanup, and reset scripts are optional diagnostics, not required to run the API.
+
 ## Agentic AI
 
 Run the services in separate terminals. Start the RAG API first using the steps above and leave it running; the agent's RAG tool calls it at `http://localhost:8000` by default.

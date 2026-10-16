@@ -44,6 +44,13 @@ rag-service/app/main.py
 rag-service/app/ingest.py
 rag-service/app/retrieve.py
 
+# Standalone RAG diagnostics; not part of the FastAPI runtime
+rag-service/app/cleanup_test.py
+rag-service/app/reset_chroma.py
+rag-service/app/test_chroma.py
+rag-service/app/test_chroma_insert.py
+rag-service/app/test_query_embedding.py
+
 # Personal resume files kept only in the local workspace
 frontend/public/html/pranjal_resume.html
 frontend/public/html/pranjal_resume_files/
