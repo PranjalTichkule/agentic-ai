@@ -31,3 +31,15 @@ rag-service/data/documents.json
 
 # Logs
 *.log
+
+# Local-only Redis page and its component
+frontend/public/html/redis-interview-cheat-sheet.html
+frontend/src/app/features/redis/
+
+# Standalone demos not used by the current RAG API
+rag-service/,gitignore
+rag-service/calculator.py
+rag-service/main.py
+rag-service/app/main.py
+rag-service/app/ingest.py
+rag-service/app/retrieve.py

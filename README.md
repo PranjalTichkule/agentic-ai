@@ -89,6 +89,6 @@ In the app, open **Documents** and upload a PDF. Once it is processed, return to
 | --- | --- |
 | `rag-service/` | Python RAG API, PDF processing, embeddings, and ChromaDB storage |
 | `backend/` | Node.js API, conversations, Gemini integration, and MCP tools |
-| `frontend/` | Angular chat, memories, documents, and Redis pages |
+| `frontend/` | Angular chat, memories, and document management |
 
 Local `.env` files, Python environments, `node_modules`, build output, uploaded PDFs, and ChromaDB files are intentionally excluded from Git. After cloning, create the local `.env` files and upload any PDFs again.
